@@ -6,6 +6,7 @@ aiofiles # file upload/storage
 pymupdf # PDF processing
 python-multipart # multipart/form-data support
 python-dotenv # environment variables
+requests # HTTP requests to Gemini API
 
 # Run app
 # uvicorn app.main:app --reload
