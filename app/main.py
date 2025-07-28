@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
 import os
 from dotenv import load_dotenv
 
@@ -22,6 +23,10 @@ os.makedirs("uploads", exist_ok=True)
 app.include_router(documents.router)
 app.include_router(images.router)
 
+# Mount the uploads directory as a static files directory
+# This is an alternative way to serve files directly
+app.mount("/static", StaticFiles(directory="uploads"), name="static")
+
 @app.get("/", tags=["root"])
 async def root():
     """
@@ -32,10 +37,12 @@ async def root():
         "docs": "/docs",
         "endpoints": {
             "images": {
-                "/images/upload/"
+                "/images/upload/": "Upload images (POST)",
+                "/images/get/{file_path}": "Get specific image (GET)",
+                "/images/list/{folder_path}": "List images in folder (GET)"
             },
             "documents": {
-                "/documents/summarize/"
+                "/documents/summarize/": "Summarize text (POST)"
             }
         }
     }
