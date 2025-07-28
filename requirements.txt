@@ -3,10 +3,9 @@ fastapi
 uvicorn
 pillow # image processing
 aiofiles # file upload/storage
-transformers # Text summarization
-torch # PyTorch for transformers requirement
 pymupdf # PDF processing
 python-multipart # multipart/form-data support
+python-dotenv # environment variables
 
 # Run app
 # uvicorn app.main:app --reload
