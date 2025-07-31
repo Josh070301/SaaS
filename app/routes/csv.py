@@ -233,7 +233,7 @@ async def convert_csv(
     has_header: bool = Form(True, description="Whether the CSV has a header row")
 ):
     """
-    Convert a CSV file to different formats (JSON, Excel, HTML, XML, PDF).
+    Convert a CSV file to different formats (JSON, Excel, HTML, XML).
     """
     if not file.filename.lower().endswith(('.csv', '.txt')):
         raise HTTPException(status_code=400, detail="File must be a CSV or TXT file")
@@ -252,13 +252,20 @@ async def convert_csv(
             delimiter = ";"
         
         # Use pandas for conversion
-        csv_file = io.StringIO(contents.decode('utf-8'))
-        df = pd.read_csv(
-            csv_file,
-            delimiter=delimiter,
-            header=0 if has_header else None,
-            engine='python'
-        )
+        try:
+            csv_file = io.StringIO(contents.decode('utf-8'))
+            df = pd.read_csv(
+                csv_file,
+                delimiter=delimiter,
+                header=0 if has_header else None,
+                engine='python'
+            )
+        except UnicodeDecodeError:
+            raise HTTPException(status_code=422, detail="Could not decode file as UTF-8. The file may use a different encoding.")
+        except pd.errors.EmptyDataError:
+            raise HTTPException(status_code=422, detail="The uploaded file is empty or contains no data.")
+        except pd.errors.ParserError:
+            raise HTTPException(status_code=422, detail="Could not parse the CSV data. Please check the file format and delimiter.")
         
         # Create output filename
         filename_base = os.path.splitext(file.filename)[0]
@@ -275,10 +282,13 @@ async def convert_csv(
             output_filename = f"{filename_base}_{timestamp}.json"
             
         elif output_format.lower() == "excel":
-            # Convert to Excel
-            df.to_excel(output_buffer, index=False, engine="openpyxl")
-            media_type = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            output_filename = f"{filename_base}_{timestamp}.xlsx"
+            try:
+                # Convert to Excel
+                df.to_excel(output_buffer, index=False, engine="openpyxl")
+                media_type = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                output_filename = f"{filename_base}_{timestamp}.xlsx"
+            except ImportError:
+                raise HTTPException(status_code=422, detail="Excel conversion requires openpyxl. Please install openpyxl package.")
             
         elif output_format.lower() == "html":
             # Convert to HTML
@@ -307,11 +317,43 @@ async def convert_csv(
             output_filename = f"{filename_base}_{timestamp}.html"
             
         elif output_format.lower() == "xml":
-            # Convert to XML
-            xml_content = df.to_xml(index=False)
-            output_buffer.write(xml_content.encode('utf-8'))
-            media_type = "application/xml"
-            output_filename = f"{filename_base}_{timestamp}.xml"
+            try:
+                # Create a copy of the dataframe to avoid modifying the original
+                xml_df = df.copy()
+                
+                # Clean column names to make them XML-compatible
+                xml_df.columns = [
+                    col.replace(' ', '_')
+                       .replace('.', '_')
+                       .replace('/', '_')
+                       .replace('\\', '_')
+                       .replace(':', '_')
+                       .replace('(', '')
+                       .replace(')', '')
+                       for col in xml_df.columns
+                ]
+                
+                # Convert to XML using the dataframe with clean column names
+                xml_content = xml_df.to_xml(index=False)
+                output_buffer.write(xml_content.encode('utf-8'))
+                media_type = "application/xml"
+                output_filename = f"{filename_base}_{timestamp}.xml"
+            except ImportError:
+                raise HTTPException(
+                    status_code=422, 
+                    detail="XML conversion requires lxml. Please install lxml package."
+                )
+            except Exception as xml_error:
+                if "Invalid tag name" in str(xml_error):
+                    raise HTTPException(
+                        status_code=422, 
+                        detail="XML conversion failed due to invalid column names. Column names contain characters not allowed in XML."
+                    )
+                else:
+                    raise HTTPException(
+                        status_code=422, 
+                        detail=f"XML conversion failed: {str(xml_error)}"
+                    )
             
         # Prepare the file for download
         output_buffer.seek(0)
@@ -327,5 +369,13 @@ async def convert_csv(
             }
         )
         
+    except HTTPException:
+        # Re-raise HTTP exceptions we've already created
+        raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error converting CSV: {str(e)}")
+        # For unexpected errors, log the full error but return a more generic message
+        print(f"Unexpected error in CSV conversion: {str(e)}")
+        raise HTTPException(
+            status_code=500, 
+            detail="An unexpected error occurred during conversion. Please try again or contact support if the issue persists."
+        )
