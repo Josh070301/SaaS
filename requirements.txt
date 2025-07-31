@@ -7,11 +7,18 @@ pymupdf # PDF processing
 python-multipart # multipart/form-data support
 python-dotenv # environment variables
 requests # HTTP requests to Gemini API
+pandas # data analysis and manipulation
+openpyxl # Excel support for pandas
+# Build App
+# pip install -r requirements.txt
 
-# Run app
+# Run app locally
 # uvicorn app.main:app --reload
 # To run the app, use the command:
 # uvicorn app.main:app --reload
 # This will start the FastAPI server with live reloading enabled.
 #Visit: http://127.0.0.1:8000
 #Auto API Docs: http://127.0.0.1:8000/docs
+
+# Run App deployed webservice in onrender
+# uvicorn app.main:app --host=0.0.0.0 --port=10000

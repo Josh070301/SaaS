@@ -5,7 +5,7 @@ import os
 from dotenv import load_dotenv
 
 # Import routers
-from app.routes import documents, images
+from app.routes import documents, images, csv
 
 # Load environment variables
 load_dotenv()
@@ -47,6 +47,7 @@ os.makedirs("uploads", exist_ok=True)
 # Include routers from route modules
 app.include_router(documents.router)
 app.include_router(images.router)
+app.include_router(csv.router)
 
 # Mount the uploads directory as a static files directory
 # This is an alternative way to serve files directly
