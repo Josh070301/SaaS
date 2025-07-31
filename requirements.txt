@@ -9,6 +9,7 @@ python-dotenv # environment variables
 requests # HTTP requests to Gemini API
 pandas # data analysis and manipulation
 openpyxl # Excel support for pandas
+lxml # XML support for pandas
 # Build App
 # pip install -r requirements.txt
 
