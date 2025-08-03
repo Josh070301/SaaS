@@ -18,7 +18,6 @@ async def send_email_route(request: EmailRequest):
     - to: Email address of the recipient
     - subject: Subject of the email
     - content: Main message content
-    - recipient_name: Name of the recipient (optional)
     """
     # Create template_vars dictionary from request
     template_vars = {
