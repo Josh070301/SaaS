@@ -1,11 +1,10 @@
 from fastapi import FastAPI
-from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 import os
 from dotenv import load_dotenv
 
 # Import routers
-from app.routes import documents, images, csv, portfolio
+from app.routes import documents, images, csv, portfolio, email
 
 # Load environment variables
 load_dotenv()
@@ -49,7 +48,16 @@ app.include_router(documents.router)
 app.include_router(images.router)
 app.include_router(csv.router)
 app.include_router(portfolio.router)
+app.include_router(email.router)  # Fixed typo: inclue_router -> include_router
 
-# Mount the uploads directory as a static files directory
-# This is an alternative way to serve files directly
-app.mount("/static", StaticFiles(directory="uploads"), name="static")
+@app.get("/")
+async def root():
+    """
+    Root endpoint that returns a success ping for service status check.
+    """
+    return {
+        "status": "success",
+        "message": "API is up and running",
+        "service": "SaaS API",
+        "version": "0.1.0"
+    }
