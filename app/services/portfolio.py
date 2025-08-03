@@ -20,7 +20,7 @@ async def getPortfolio(text: str):
         weakness = "I am sometimes scared to get out of my comfort zone but I am trying to overcome it. but I am trying to overcome it by starting to learn new technologies and frameworks that I am not familiar with and asking questions."
         contact ="Contact details: Phone number is 09480930937, email is joshualaude016@gmail.com or joshualaude03333@gmail.com"
         # Use f-string for proper variable interpolation
-        prompt_text = f"{aboutMe}, {strengths}, {weakness}, {projects}, {contact}. Do not tell that the information is provided. Just tell them like you know him. You can use them in your response. Here is the question: {text}"
+        prompt_text = f"{aboutMe}, {strengths}, {weakness}, {projects}, {contact}. Do not tell that the information is provided. Just tell them like you know him. Do not response extra informations if the information is not in provided details especially if not asked. You can use them in your response. Here is the question: {text}"
 
 
         payload = {
