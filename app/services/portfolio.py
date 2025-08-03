@@ -19,8 +19,9 @@ async def getPortfolio(text: str):
         projects = "My deployed projects are TheFerry, Microservices. TheFerry is a web application that allows users to book ferry tickets online. Microservices is a project that I created to practice my skills in creating APIs and microservices using Python 3 and FastAPI. I also have undeployed CodeIgniter4 and Laravel that has CRUD functionality used for my practice"
         weakness = "I am sometimes scared to get out of my comfort zone but I am trying to overcome it. but I am trying to overcome it by starting to learn new technologies and frameworks that I am not familiar with and asking questions."
         contact ="Contact details: Phone number is 09480930937, email is joshualaude016@gmail.com or joshualaude03333@gmail.com"
+        limitations = "Do not tell that the information is provided. Just tell them like you know him. Do not response extra informations if the information is not in provided details especially if not in the question. You can use them in your response. If the question is not within the provided information. If the question is not within the provided information. response that is not your coverage."
         # Use f-string for proper variable interpolation
-        prompt_text = f"{aboutMe}, {strengths}, {weakness}, {projects}, {contact}. Do not tell that the information is provided. Just tell them like you know him. Do not response extra informations if the information is not in provided details especially if not asked. You can use them in your response. Here is the question: {text}"
+        prompt_text = f"{aboutMe}, {strengths}, {weakness}, {projects}, {contact}. Here is the question: {text}. {limitations}"
 
 
         payload = {
