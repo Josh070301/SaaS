@@ -24,7 +24,7 @@ async def summarize(request: SummarizeRequest):
 @router.post("/front-end-based")
 async def portfolio(request: PortfolioRequest):
     """
-    Process and return text from portfolio request.
+    Front-End Prompt Based AI! Provide details then prompt dynamically!.
     """
     return await getFrontEndBasedAI(
         text=request.text
