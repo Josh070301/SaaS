@@ -4,7 +4,7 @@ import os
 from dotenv import load_dotenv
 
 # Import routers
-from app.routes import documents, images, csv, portfolio, email
+from app.routes import ai, images, csv, email
 
 # Load environment variables
 load_dotenv()
@@ -44,10 +44,9 @@ else:
 os.makedirs("uploads", exist_ok=True)
 
 # Include routers from route modules
-app.include_router(documents.router)
+app.include_router(ai.router)
 app.include_router(images.router)
 app.include_router(csv.router)
-app.include_router(portfolio.router)
 app.include_router(email.router)  # Fixed typo: inclue_router -> include_router
 
 @app.get("/")
